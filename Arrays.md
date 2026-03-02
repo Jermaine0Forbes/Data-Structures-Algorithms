@@ -22,74 +22,92 @@ View Content
 
 ```php
 <?php
-// Enter your code here, enjoy!
-$array = [
+
+
+# the assortment of date ranges
+$allDatesArray = [
 	 ["start_date" => "2026-01-26", "end_date" => "2026-01-29"],
 	 ["start_date" => "2026-02-13", "end_date" => "2026-02-18"],
-	 ["start_date" => "2026-01-14", "end_date" => "2026-01-29"],
+	 ["start_date" => "2026-01-14", "end_date" => "2026-01-29"], # this date range intersects
 	 ["start_date" => "2026-02-01", "end_date" => "2026-02-04"],
- 	 ["start_date" => "2026-02-20", "end_date" => "2026-02-24"],
-  	 ["start_date" => "2026-02-01", "end_date" => "2026-02-04"],
+ 	 ["start_date" => "2026-02-20", "end_date" => "2026-02-24"], 
+  	 ["start_date" => "2026-02-01", "end_date" => "2026-02-04"], # this date range intersects
    	 ["start_date" => "2026-03-01", "end_date" => "2026-03-04"],
-   	 ["start_date" => "2026-01-01", "end_date" => "2026-04-06"],
+   	 ["start_date" => "2026-01-01", "end_date" => "2026-04-06"], # this date range intersects
    	 ["start_date" => "2026-04-01", "end_date" => "2026-04-06"],
 	];
 	
-$f = "Y-m-d";
-$m = "+5 days";
 
-function br () {
+# This is primarily here for line breaking
+function br (): void 
+{
 	echo "\n";
 }
 
-function getMills(string $date)
+# returns a date string in milliseconds
+function getMills(string $date): int
 {
-	return (new DateTime($date))->format('Uv');
+	return (int)(new DateTime($date))->format('Uv');
 }
 
-function checkRange($current, $exist) {
+/*
+	Checks to see if the current date range 
+	is intersecting an existing date range
+*/
+function checkRange(array $current, array $exist) : bool
+{
 	$cs = $current['start_date'];
 	$es = $exist['start_date'];
-	$cStart = (int)getMills($cs);
-	$eStart = (int)getMills($es);
+	$cStart = getMills($cs);
+	$eStart = getMills($es);
 	
 	
 	$ce = $current['end_date'];
 	$ee = $exist['end_date'];
-	$cEnd = (int)getMills($ce);
-	$eEnd = (int)getMills($ee);
+	$cEnd = getMills($ce);
+	$eEnd = getMills($ee);
 	
-	$result = ($eStart <= $cStart && $cStart <= $eEnd) || ( $eStart <= $cEnd  && $cEnd <= $eEnd) || ($eStart >=  $cStart && $cEnd >= $eEnd);
+	$intersects = ($eStart <= $cStart && $cStart <= $eEnd) || ( $eStart <= $cEnd  && $cEnd <= $eEnd) || ($eStart >=  $cStart && $cEnd >= $eEnd);
+	$result = $intersects ? "true" : "false";
 	br();
-	echo "Is $cs - $ce  intersecting $es - $ee? ". (bool)$result;
+	echo "Is $cs - $ce  intersecting $es - $ee? ".$result;
 	br();
 	
-	return  $result;
+	return  $intersects;
 }
 
-br();
-	
-$d =  new DateTime();
-// echo $d->modify($m)->format($f);
+$uniqueDatesArray = [];
 
-br();
-$dateArr = [];
-
-for($i  = 0 ; $i < sizeof($array); $i++) {
+/*
+ Loops through the array of date ranges
+ and only stores them to the $uniqueDatesArray variable
+ if it is the first date range or any of the
+ current date ranges do intersect the existing
+ date ranges that are inside $uniqueDatesArray
+*/
+for($i  = 0 ; $i < sizeof($allDatesArray); $i++) {
 	
-	$range = $array[$i];
-	$start = (int)getMills($range['start_date']);
-	$end = (int)getMills($range['end_date']);
-	$overlap = true;
-	//echo $start;
+	$recentDateRange = $allDatesArray[$i];
+	$start = getMills($recentDateRange['start_date']);
+	$end = getMills($recentDateRange['end_date']);
+    list($st, $en) =  array_map(fn($date):int => getMills($date), array_values($recentDateRange) );
+    echo "this should be the start: $st and end: $en ,  for the recent date range";
+    br();
+
+	$isUnique = true;
+
+    /* if this is the first date range
+       then store it, and go to the next iteration
+    */
 	if($i === 0 ) {
-		$dateArr[] = $range;
+		$uniqueDatesArray[] = $recentDateRange;
 		continue;
 	}
-	foreach( $dateArr as $k => $v) {
+
+	foreach( $uniqueDatesArray as $k => $uniqueDateRange) {
 		echo "the ".($k+1)." date entry";
-		$s = (int)getMills($v['start_date']);
-		$e = (int)getMills($v['end_date']);
+		$s = getMills($uniqueDateRange['start_date']);
+		$e = getMills($uniqueDateRange['end_date']);
 		
 		/*
 		br();
@@ -102,19 +120,22 @@ for($i  = 0 ; $i < sizeof($array); $i++) {
 		
 		*/
 	
-		if(checkRange($range, $v)){
-		 $overlap = false;
+		if(checkRange($recentDateRange, $uniqueDateRange)){
+		 $isUnique = false;
           break;
 		}
 
 	}
 	br();
 	
-	if($overlap){
-		$dateArr[] = $range;
+	if($isUnique){
+		$uniqueDatesArray[] = $recentDateRange;
 	}
 
 }
+
+var_dump($uniqueDatesArray);
+
 ```
 
 Explanation: 
