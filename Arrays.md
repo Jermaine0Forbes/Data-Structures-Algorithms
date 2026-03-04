@@ -22,7 +22,7 @@ View Content
 
 ```php
 <?php
-
+const DEBUG = true;
 
 # the assortment of date ranges
 $allDatesArray = [
@@ -45,10 +45,29 @@ function br (): void
 }
 
 # returns a date string in milliseconds
-function getMills(string $date): int
+function getMilliseconds(string $date): int
 {
 	return (int)(new DateTime($date))->format('Uv');
 }
+
+# assigns getMilliseconds the function to a variable
+$gm =  'getMilliseconds';
+
+
+function  getMillisecondsDate (array $arr) 
+{
+	global $gm;
+	list($startMilliseconds, $endMilliseconds) =  array_map(fn($date):int => $gm($date), array_values($arr) );
+
+	return [
+		$startMilliseconds,
+		$endMilliseconds
+	];
+}
+
+# assigns getMillisecondsDate the function to a variable
+$gmd = 'getMillisecondsDate';
+
 
 /*
 	Checks to see if the current date range 
@@ -56,22 +75,26 @@ function getMills(string $date): int
 */
 function checkRange(array $current, array $exist) : bool
 {
+	global $gmd;
+
+	list($cStart, $cEnd) = $gmd($current);
+	list($eStart, $eEnd) = $gmd($exist);
 	$cs = $current['start_date'];
 	$es = $exist['start_date'];
-	$cStart = getMills($cs);
-	$eStart = getMills($es);
-	
-	
 	$ce = $current['end_date'];
 	$ee = $exist['end_date'];
-	$cEnd = getMills($ce);
-	$eEnd = getMills($ee);
 	
-	$intersects = ($eStart <= $cStart && $cStart <= $eEnd) || ( $eStart <= $cEnd  && $cEnd <= $eEnd) || ($eStart >=  $cStart && $cEnd >= $eEnd);
+	$currentStartDateIntersects = ($eStart <= $cStart && $cStart <= $eEnd);
+	$currentEndDateIntersects =  ( $eStart <= $cEnd  && $cEnd <= $eEnd);
+	$currentDatesOverlap = ($eStart >=  $cStart && $cEnd >= $eEnd);
+
+	$intersects =  $currentStartDateIntersects|| $currentEndDateIntersects || $currentDatesOverlap;
 	$result = $intersects ? "true" : "false";
-	br();
-	echo "Is $cs - $ce  intersecting $es - $ee? ".$result;
-	br();
+
+	if(DEBUG) {
+		echo "Is $cs - $ce  intersecting $es - $ee? ".$result;
+		br();
+	}
 	
 	return  $intersects;
 }
@@ -88,11 +111,12 @@ $uniqueDatesArray = [];
 for($i  = 0 ; $i < sizeof($allDatesArray); $i++) {
 	
 	$recentDateRange = $allDatesArray[$i];
-	$start = getMills($recentDateRange['start_date']);
-	$end = getMills($recentDateRange['end_date']);
-    list($st, $en) =  array_map(fn($date):int => getMills($date), array_values($recentDateRange) );
-    echo "this should be the start: $st and end: $en ,  for the recent date range";
-    br();
+    list($recentStart, $recentEnd) = $gmd($recentDateRange);
+    
+	if(DEBUG) {
+		echo "this should be the start date: $recentStart and end date: $recentEnd, for the recent date range";
+		br();
+	}
 
 	$isUnique = true;
 
@@ -101,24 +125,29 @@ for($i  = 0 ; $i < sizeof($allDatesArray); $i++) {
     */
 	if($i === 0 ) {
 		$uniqueDatesArray[] = $recentDateRange;
+		if(DEBUG){
+			echo "first unique date entry";
+			br();
+			br();
+		}
 		continue;
 	}
 
 	foreach( $uniqueDatesArray as $k => $uniqueDateRange) {
-		echo "the ".($k+1)." date entry";
-		$s = getMills($uniqueDateRange['start_date']);
-		$e = getMills($uniqueDateRange['end_date']);
-		
-		/*
-		br();
-		
-		echo "is between $s - $e and its average is ".($s+$e)/2;
-		br();
-		
-		echo "current date shows $start - $end and its average is ".($start+$end)/2;
-		br();
-		
-		*/
+		if(DEBUG){
+			br();
+			echo "unique date entry: ".($k+1);
+		}
+
+		list($uniqueStart, $uniqueEnd) = $gmd($uniqueDateRange);
+
+		if(DEBUG){
+			br();
+			echo "this unique date is between $uniqueStart - $uniqueEnd and its average is ".($uniqueStart+$uniqueEnd)/2;
+			br();
+			echo "current date shows $recentStart - $recentEnd and it's average is ".($recentStart+$recentEnd)/2;
+			br();
+		}
 	
 		if(checkRange($recentDateRange, $uniqueDateRange)){
 		 $isUnique = false;
@@ -126,7 +155,9 @@ for($i  = 0 ; $i < sizeof($allDatesArray); $i++) {
 		}
 
 	}
-	br();
+	if(DEBUG){
+		br();
+	}
 	
 	if($isUnique){
 		$uniqueDatesArray[] = $recentDateRange;
