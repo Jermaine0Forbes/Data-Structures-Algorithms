@@ -13,15 +13,46 @@
 View Content
 </summary>
 
-**Problem:**  There's an array of different dates that start and end. You are supposed to only include dates that do not intersect each other.
+ :dizzy_face: **Problem:**  There's an array of different dates that start and end. You are supposed to only include dates that do not intersect each other.
 ---
-	Explanation: There's an array or maybe even a dictionary of different start and end date values. The solution is to have an array that collect all the unique date ranges, compare a new date range to an already verified date range, and if the new date range is not intersecting the existing unique date range then you will also store new date range into the array that has the unique date ranges. To verify if a date range is unique you would need to loop through original array, convert the start and end dates to milliseconds and compare them to each unique date range. This will essentially be the comparison
+:open_mouth: Explanation: There's an array or maybe even a dictionary of different start and end date values. The solution is to have an array that collect all the unique date ranges, compare a new date range to an already verified date range, and if the new date range is not intersecting the existing unique date range then you will also store new date range into the array that has the unique date ranges. To verify if a date range is unique you would need to loop through original array, convert the start and end dates to milliseconds and compare them to each unique date range. This will essentially be the comparison
 
-	```	isIntersecting = (uniqueStartDate <= newStartDate and newStartDate <= uniqueEndDate)
-	 or ( uniqueStartDate <= newEndDate  and newEndDate <= uniqueEndDate)
-	 or (uniqueStartDate >=  newStartDate and newEndDate >= uniqueEndDate);
-	``` 
-	this is the core logic to tell the difference in terms of dates intersecting each other
+```	
+	isIntersecting = (uniqueStartDate <= newStartDate and newStartDate <= uniqueEndDate)
+	or ( uniqueStartDate <= newEndDate  and newEndDate <= uniqueEndDate)
+	or (uniqueStartDate >=  newStartDate and newEndDate >= uniqueEndDate);
+``` 
+this is the core logic to tell the difference in terms of dates intersecting each other
+
+- [php solution][php-1]
+- [c# solution][cs-1]
+- [python solution][py-1]
+- [javascript solution][js-1]
+
+  [php-1]:#php-solution
+  [cs-1]:#cs-solution
+  [py-1]:#python-solution
+  [js-1]:#javascript-solution
+
+  #### javascript solution
+
+```js
+console.log('hello world')
+```
+  
+  #### python solution
+
+```python
+print('hello world')
+```
+
+  #### cs solution
+
+```cs
+Console.WriteLine('hello world')
+```
+  
+  #### php solution
 
 ```php
 	<?php

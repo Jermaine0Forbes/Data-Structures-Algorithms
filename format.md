@@ -24,8 +24,44 @@
 
 ```
 
-Explanation: 
+ :open_mouth: Explanation: 
+
+
+ - [php solution][php-1]
+ - [c# solution][cs-1]
+ - [python solution][py-1]
+ - [javascript solution][js-1]
+ 
+   [php-1]:#php-solution
+   [cs-1]:#cs-solution
+   [py-1]:#python-solution
+   [js-1]:#javascript-solution
+
+   #### javascript solution
+
+  ```js
+	console.log('hello world')
+  ```
+  
+  #### python solution
+
+  ```python
+	print('hello world')
+  ```
+
+  #### cs solution
+
+  ```cs
+	Console.WriteLine('hello world')
+  ```
+  
+  #### php solution
+
+```php
+<?php
+  echo "hello world";
+```
 
 </details>
 
-[go back to table of contents][home]
+[go back to table of contents :home:][home]
